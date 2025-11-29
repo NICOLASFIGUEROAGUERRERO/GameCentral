@@ -2,11 +2,11 @@ import mysql from "mysql2/promise";
 
 export async function crearConexion() {
   return mysql.createConnection({
-    host: import.meta.env.DB_HOST,
-    user: import.meta.env.DB_USER,
-    password: import.meta.env.DB_PASSWORD,
-    database: import.meta.env.DB_DATABASE,
-    port: Number(import.meta.env.DB_PORT), 
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: Number(process.env.MYSQL_PORT) || 3306,
   });
 }
 
