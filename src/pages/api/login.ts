@@ -35,7 +35,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await conn.query("INSERT INTO login_logs (id_user) VALUES (?)", [user.id_user]);
-
     conn.release();
 
     const secret = new TextEncoder().encode(import.meta.env.SESSION_SECRET);
@@ -52,14 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
     const headers = new Headers();
     headers.append("Set-Cookie", `session=${token}; HttpOnly; Path=/; Max-Age=86400; SameSite=Strict`);
 
-    return new Response(JSON.stringify({
-      success: true,
-      message: "Inicio de sesión exitoso",
-      user: { id: user.id_user, username: user.nombre_usuario }
-    }), {
-      status: 200,
-      headers
-    });
+    return new Response(JSON.stringify({ success: true, message: "Inicio de sesión exitoso" }), { status: 200, headers });
 
   } catch (err) {
     console.error("Error en login:", err);

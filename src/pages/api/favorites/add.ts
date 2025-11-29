@@ -18,12 +18,12 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
       "INSERT IGNORE INTO favoritos (id_user, game_slug) VALUES (?, ?)",
       [locals.user.id, game_slug]
     );
-
-    conn.release();
-    return redirect("/favorites");
   } catch (err) {
     console.error("Error al guardar favorito:", err);
-    conn.release();
     return new Response("Error al agregar favorito", { status: 500 });
+  } finally {
+    conn.release();
   }
+
+  return redirect("/favorites");
 };

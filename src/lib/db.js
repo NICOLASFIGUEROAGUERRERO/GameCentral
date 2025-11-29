@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 
-const connection = await mysql.createPool({
+// Creamos pool global
+const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
@@ -11,7 +12,12 @@ const connection = await mysql.createPool({
   queueLimit: 0
 });
 
-export default connection;
+export default {
+  async getConnection() {
+    return await pool.getConnection();
+  }
+};
+
 
 export const db = {
   async getFavoritesByUserId(userId) {

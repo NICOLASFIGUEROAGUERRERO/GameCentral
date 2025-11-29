@@ -19,7 +19,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-
     const conn = await db.getConnection();
 
     const [rows]: any = await conn.query(
@@ -38,7 +37,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     conn.release();
-
     return new Response(JSON.stringify({ success: true, message: "Usuario registrado correctamente" }), { status: 200 });
 
   } catch (err) {
