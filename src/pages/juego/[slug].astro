@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 
 const { slug } = Astro.params;
 
-const API_URL = "https://gamecentral-production-a901.up.railway.app";
+const API_URL = "https://gamecentral-production-aa13.up.railway.app/";
 
 const res = await fetch(`${API_URL}/api/juego?slug=${slug}`);
 const data = await res.json();
