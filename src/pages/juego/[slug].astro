@@ -1,0 +1,168 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const { slug } = Astro.params;
+const res = await fetch(`http://localhost:4321/api/juego?slug=${slug}`);
+const data = await res.json();
+
+//usuario logueado
+const user = Astro.locals.user;
+---
+
+<Layout title={data?.name ?? "Juego"}>
+  <div class="max-w-5xl mx-auto px-6 py-10 text-white space-y-8">
+
+    <!-- TÍTULO -->
+    <h1 class="text-5xl font-bold text-center mb-4">
+      {data?.name ?? "No hay datos"}
+    </h1>
+
+    <!-- FAVORITOS -->
+    <div class="flex justify-center mb-6">
+
+      {user ? (
+        <form method="POST" action="/api/favorites/add">
+          <input type="hidden" name="game_slug" value={slug} />
+
+          <button 
+            class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg font-semibold shadow-lg"
+            type="submit"
+          >
+            ❤️ Añadir a favoritos
+          </button>
+        </form>
+      ) : (
+        <a 
+          href="/login" 
+          class="px-5 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg shadow text-white"
+        >
+          Inicia sesión para agregar a favoritos
+        </a>
+      )}
+
+    </div>
+
+    <!-- IMAGEN PRINCIPAL + CLIP -->
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Imagen principal -->
+      {data?.background_image && (
+        <div class={data?.clip?.clip ? "w-full md:w-1/2" : "w-full"}>
+          <img 
+            src={data.background_image} 
+            alt={data.name} 
+            class="w-full object-cover h-80 md:h-full rounded-xl shadow-2xl"
+          />
+        </div>
+      )}
+
+      <!-- Clip de video -->
+      {data?.clip?.clip ? (
+        <div class="w-full md:w-1/2 rounded-xl overflow-hidden shadow-2xl">
+          <video
+            src={data.clip.clip}
+            controls
+            class="w-full h-80 md:h-full rounded-xl object-cover"
+          />
+        </div>
+      ) : (
+        <div class="w-full md:w-1/2 flex items-center justify-center text-gray-400 italic">
+          No hay clip disponible
+        </div>
+      )}
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
+      <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
+      <p class="text-gray-300 leading-relaxed" set:html={data.description}></p>
+    </section>
+
+    <!-- INFO GENERAL -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+        <h3 class="text-xl font-semibold mb-2">Metacritic</h3>
+        <p class={`text-3xl font-bold ${data?.metacritic >= 90 ? "text-green-400" : data?.metacritic >= 70 ? "text-yellow-400" : "text-red-400"}`}>
+          {data?.metacritic ?? "N/A"}
+        </p>
+      </div>
+
+      <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+        <h3 class="text-xl font-semibold mb-2">Fecha de lanzamiento</h3>
+        <p class="text-gray-300">{data?.released ?? "Desconocido"}</p>
+      </div>
+
+      <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+        <h3 class="text-xl font-semibold mb-2">Rating</h3>
+        <p class="text-gray-300">{data?.rating ?? "N/A"} / 5</p>
+      </div>
+    </section>
+
+    <!-- PLATAFORMAS -->
+    {data?.platforms && (
+      <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-semibold mb-4">Plataformas</h3>
+        <ul class="flex flex-wrap gap-3">
+          {data.platforms.map((p: any) => (
+            <li class="bg-gray-800 px-4 py-2 rounded-full text-sm shadow">{p.platform.name}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- GÉNEROS -->
+    {data?.genres && (
+      <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-semibold mb-4">Géneros</h3>
+        <ul class="flex flex-wrap gap-3">
+          {data.genres.map((g: any) => (
+            <li class="bg-gray-800 px-4 py-2 rounded-full text-sm shadow">{g.name}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- TIENDAS -->
+    {data?.stores && (
+      <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-semibold mb-4">Tiendas</h3>
+        <ul class="flex flex-wrap gap-3">
+          {data.stores.map((s: any) => (
+            <li class="bg-gray-800 px-4 py-2 rounded-full text-sm shadow">{s.store.name}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- DESARROLLADORES Y PUBLISHERS -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {data?.developers && (
+        <div class="bg-gray-900 p-6 rounded-xl shadow-lg">
+          <h3 class="text-xl font-semibold mb-2">Desarrolladores</h3>
+          <ul class="list-disc list-inside">
+            {data.developers.map((d: any) => <li>{d.name}</li>)}
+          </ul>
+        </div>
+      )}
+      {data?.publishers && (
+        <div class="bg-gray-900 p-6 rounded-xl shadow-lg">
+          <h3 class="text-xl font-semibold mb-2">Publishers</h3>
+          <ul class="list-disc list-inside">
+            {data.publishers.map((p: any) => <li>{p.name}</li>)}
+          </ul>
+        </div>
+      )}
+    </section>
+
+    <!-- SCREENSHOTS -->
+    {data?.short_screenshots && (
+      <section>
+        <h3 class="text-2xl font-semibold mb-4">Screenshots</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {data.short_screenshots.map((s: any) => (
+            <img src={s.image} alt="Screenshot" class="rounded-xl shadow-lg" />
+          ))}
+        </div>
+      </section>
+    )}
+
+  </div>
+</Layout>

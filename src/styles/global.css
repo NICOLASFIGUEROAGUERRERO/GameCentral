@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+body {
+  background-image: url('https://imgs.search.brave.com/5L0KSUlpnACJrmbtW2ULTHMG5ktuC0I4t9rRYIgiRNw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/dmVjdG9yLXByZW1p/dW0vZm9uZG8tYWJz/dHJhY3RvLWZvcm1h/cy1nZW9tZXRyaWNh/cy1uZW9uLWp1Z2Fu/ZG9fOTI4NzE1LTE2/MDcuanBnP3NlbXQ9/YWlzX2h5YnJpZCZ3/PTc0MCZxPTgw');
+  background-size: cover;       /* Ajusta la imagen al tamaño de la pantalla */
+  background-position: center;  /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que se repita */
+}
+
+

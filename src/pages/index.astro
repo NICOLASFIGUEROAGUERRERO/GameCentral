@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import halo from '../image/halo.png';
+import left4dead2 from '../image/left4dead2.png';
+import f12024 from '../image/f12024.png';
+import hollowknight from '../image/hollowknight.png';
+import mortalcombat11 from '../image/mortalcombat11.png';
+import minecraft from '../image/minecraft.png';
+import { Image } from 'astro:assets';
+---
+
+<Layout title="Página principal">
+
+    <!-- Título -->
+    <h1 class="text-3xl text-center font-bold mt-10 text-white">
+      Bienvenido a GameCentral
+    </h1>
+
+    <p class="text-center text-white mt-4 mb-10">
+      Haz clic en un juego para ver más detalles.
+    </p>
+
+    <!-- Grid de juegos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto">
+
+      <!-- Halo -->
+      <a href="/juego/halo-the-master-chief-collection" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={halo} 
+          alt="Halo" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"/>
+      </a>
+
+      <!-- Left 4 Dead 2 -->
+      <a href="/juego/left-4-dead-2" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={left4dead2} 
+          alt="Left 4 Dead 2" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"
+        />
+      </a>
+
+      <!-- F1 2024 -->
+      <a href="/juego/f1-24" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={f12024} 
+          alt="F1 2024" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"
+        />
+      </a>
+
+      <!-- Hollow Knight -->
+      <a href="/juego/hollow-knight" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={hollowknight} 
+          alt="Hollow Knight" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"
+        />
+      </a>
+
+      <!-- Mortal Kombat 11 -->
+      <a href="/juego/mortal-kombat-11" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={mortalcombat11} 
+          alt="Mortal Kombat 11" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"
+        />
+      </a>
+
+      <!-- Minecraft -->
+      <a href="/juego/minecraft" class="block group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src={minecraft} 
+          alt="Minecraft" 
+          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"/>
+      </a>
+    </div>
+  </div>
+</Layout>
+
+
+

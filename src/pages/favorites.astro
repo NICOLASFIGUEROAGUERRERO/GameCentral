@@ -1,0 +1,80 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { crearConexion } from "@/lib/db.js";
+
+const user = Astro.locals.user as { id_user?: number; id?: number; username: string } | null;
+if (!user) return Astro.redirect("/login");
+
+// Conexión a la DB
+const conn = await crearConexion();
+
+// Traer favoritos del usuario
+const userId = user.id_user ?? user.id;
+const [rows] = await conn.execute(
+  "SELECT * FROM favoritos WHERE id_user = ?",
+  [userId]
+);
+
+await conn.end();
+
+// Asegurarse de que rows sea un array de objetos simples
+type FavoritoRow = { id_favorito: number; game_slug: string; [key: string]: any };
+const favoritosRaw = (Array.isArray(rows) ? rows : []).map(r => r as FavoritoRow);
+
+// Array final con datos de cada juego
+const favoritos: { id: number; gameSlug: string; name: string; background_image: string }[] = [];
+
+for (const fav of favoritosRaw) {
+  try {
+    const res = await fetch(`http://localhost:4321/api/juego?slug=${fav.game_slug}`);
+    const data = await res.json();
+
+    favoritos.push({
+      id: fav.id_favorito,
+      gameSlug: fav.game_slug,
+      name: data.name ?? fav.game_slug,
+      background_image: data.background_image ?? "/placeholder.jpg",
+    });
+  } catch (err) {
+    console.error("Error fetching game data for favorite:", fav.game_slug, err);
+    favoritos.push({
+      id: fav.id_favorito,
+      gameSlug: fav.game_slug,
+      name: fav.game_slug,
+      background_image: "/placeholder.jpg",
+    });
+  }
+}
+---
+
+<Layout title="Mis Favoritos">
+  <main class="max-w-6xl mx-auto px-6 py-10 text-white space-y-8">
+    <h1 class="text-4xl font-bold text-center mb-6">⭐ Mis Juegos Favoritos</h1>
+
+    {favoritos.length === 0 ? (
+      <p class="text-center text-gray-300">No tienes juegos en favoritos todavía.</p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {favoritos.map(fav => (
+          <div class="bg-gray-900 rounded-xl shadow-lg overflow-hidden relative group">
+            <a href={`/juego/${fav.gameSlug}`} class="block overflow-hidden">
+              <img
+                src={fav.background_image}
+                alt={fav.name}
+                class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-4 border-white rounded-lg shadow-xl"
+              />
+              <div class="p-4 text-center font-semibold">{fav.name}</div>
+            </a>
+
+            <form method="POST" action="/api/favorites/remove" class="absolute top-2 right-2">
+              <input type="hidden" name="id" value={fav.id} />
+              <button type="submit" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-500">
+                ❌
+              </button>
+            </form>
+          </div>
+        ))}
+      </div>
+    )}
+  </main>
+</Layout>
