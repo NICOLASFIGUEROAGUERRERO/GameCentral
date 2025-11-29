@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 const { slug } = Astro.params;
-const res = await fetch(`http://localhost:4321/api/juego?slug=${slug}`);
+const res = await fetch(`/api/juego?slug=${slug}`);
 const data = await res.json();
 
 //usuario logueado
