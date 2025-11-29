@@ -2,15 +2,15 @@ import mysql from "mysql2/promise";
 
 export async function crearConexion() {
   return mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "NICOLAS",
-    database: "game_central",
+    host: import.meta.env.DB_HOST,
+    user: import.meta.env.DB_USER,
+    password: import.meta.env.DB_PASSWORD,
+    database: import.meta.env.DB_DATABASE,
+    port: Number(import.meta.env.DB_PORT), 
   });
 }
 
 export const db = {
-  // Obtener favoritos del usuario
   async getFavoritesByUserId(userId) {
     const conn = await crearConexion();
     const [rows] = await conn.execute(
@@ -18,8 +18,6 @@ export const db = {
       [userId]
     );
     await conn.end();
-
-    // Mapear a objetos simples para JS
     return rows.map(row => ({
       id_favorito: row.id_favorito,
       id_user: row.id_user,
@@ -27,7 +25,6 @@ export const db = {
     }));
   },
 
-  // Agregar un favorito
   async addFavorite(userId, gameSlug) {
     const conn = await crearConexion();
     const [result] = await conn.execute(
@@ -38,7 +35,6 @@ export const db = {
     return result.insertId;
   },
 
-  // Eliminar favorito
   async removeFavorite(id) {
     const conn = await crearConexion();
     const [result] = await conn.execute(
