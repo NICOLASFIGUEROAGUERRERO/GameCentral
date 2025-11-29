@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { crearConexion } from "src/lib/db";
+import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 
 export const POST: APIRoute = async ({ request }) => {
@@ -19,25 +19,26 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const conexion = await crearConexion();
-    if (!conexion) return new Response(JSON.stringify({ success: false, message: "Error de conexión" }), { status: 500 });
 
-    const [rows]: any = await conexion.execute(
+    const conn = await db.getConnection();
+
+    const [rows]: any = await conn.query(
       "SELECT id_user FROM usuarios WHERE nombre_usuario = ? OR correo_electronico = ?",
       [username, email]
     );
 
     if (rows.length > 0) {
-      await conexion.end();
+      conn.release();
       return new Response(JSON.stringify({ success: false, message: "Usuario o correo ya registrado" }), { status: 409 });
     }
 
-    await conexion.execute(
+    await conn.query(
       "INSERT INTO usuarios (nombre_usuario, correo_electronico, contraseña) VALUES (?, ?, ?)",
       [username, email, hashed]
     );
 
-    await conexion.end();
+    conn.release();
+
     return new Response(JSON.stringify({ success: true, message: "Usuario registrado correctamente" }), { status: 200 });
 
   } catch (err) {
