@@ -1,32 +1,38 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { crearConexion } from "@/lib/db.js";
+import db from "@/lib/db";
 
+// Usuario desde session
 const user = Astro.locals.user as { id_user?: number; id?: number; username: string } | null;
 if (!user) return Astro.redirect("/login");
 
-// Conexión a la DB
-const conn = await crearConexion();
+// Conexión a la DB con pool
+const conn = await db.getConnection();
 
-// Traer favoritos del usuario
+// Obtener los favoritos del usuario
 const userId = user.id_user ?? user.id;
-const [rows] = await conn.execute(
+const [rows] = await conn.query(
   "SELECT * FROM favoritos WHERE id_user = ?",
   [userId]
 );
 
-await conn.end();
+conn.release();
 
-// Asegurarse de que rows sea un array de objetos simples
+// Convertir rows a array limpio
 type FavoritoRow = { id_favorito: number; game_slug: string; [key: string]: any };
 const favoritosRaw = (Array.isArray(rows) ? rows : []).map(r => r as FavoritoRow);
 
-// Array final con datos de cada juego
+// Detectar base URL para producción o local
+const apiBase = import.meta.env.PROD
+  ? Astro.url.origin // === dominio real en Railway
+  : "http://localhost:4321";
+
+// Construir lista final
 const favoritos: { id: number; gameSlug: string; name: string; background_image: string }[] = [];
 
 for (const fav of favoritosRaw) {
   try {
-    const res = await fetch(`http://localhost:4321/api/juego?slug=${fav.game_slug}`);
+    const res = await fetch(`${apiBase}/api/juego?slug=${fav.game_slug}`);
     const data = await res.json();
 
     favoritos.push({
@@ -36,7 +42,7 @@ for (const fav of favoritosRaw) {
       background_image: data.background_image ?? "/placeholder.jpg",
     });
   } catch (err) {
-    console.error("Error fetching game data for favorite:", fav.game_slug, err);
+    console.error("Error fetching game data:", fav.game_slug, err);
     favoritos.push({
       id: fav.id_favorito,
       gameSlug: fav.game_slug,
