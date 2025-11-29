@@ -11,34 +11,16 @@ export const GET: APIRoute = async ({ url }) => {
     );
   }
 
-  // Fetch datos principales del juego
   const gameRes = await fetch(`https://api.rawg.io/api/games/${slug}?key=${apiKey}`);
-  if (!gameRes.ok) {
-    return new Response(
-      JSON.stringify({ error: "Game not found" }),
-      { status: gameRes.status }
-    );
-  }
   const gameData = await gameRes.json();
 
-  // Fetch screenshots
   const screenshotsRes = await fetch(`https://api.rawg.io/api/games/${slug}/screenshots?key=${apiKey}`);
-  if (screenshotsRes.ok) {
-    const screenshotsData = await screenshotsRes.json();
-    gameData.short_screenshots = screenshotsData.results ?? [];
-  } else {
-    gameData.short_screenshots = [];
-  }
+  const screenshotsData = (screenshotsRes.ok ? await screenshotsRes.json() : { results: [] });
+  gameData.short_screenshots = screenshotsData.results;
 
-  // Fetch clips
   const clipsRes = await fetch(`https://api.rawg.io/api/games/${slug}/movies?key=${apiKey}`);
-  if (clipsRes.ok) {
-    const clipsData = await clipsRes.json();
-    // RAWG devuelve un array en 'results', tomamos el primero como clip principal
-    gameData.clip = clipsData.results && clipsData.results.length > 0 ? clipsData.results[0] : null;
-  } else {
-    gameData.clip = null;
-  }
+  const clipsData = (clipsRes.ok ? await clipsRes.json() : { results: [] });
+  gameData.clip = clipsData.results?.[0] || null;
 
   return new Response(JSON.stringify(gameData));
 };

@@ -1,28 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+
 const { slug } = Astro.params;
-const res = await fetch(`/api/juego?slug=${slug}`);
+
+const API_URL = "https://gamecentral-production-a901.up.railway.app";
+
+const res = await fetch(`${API_URL}/api/juego?slug=${slug}`);
 const data = await res.json();
 
-//usuario logueado
 const user = Astro.locals.user;
 ---
 
 <Layout title={data?.name ?? "Juego"}>
   <div class="max-w-5xl mx-auto px-6 py-10 text-white space-y-8">
-
-    <!-- TÍTULO -->
     <h1 class="text-5xl font-bold text-center mb-4">
       {data?.name ?? "No hay datos"}
     </h1>
 
-    <!-- FAVORITOS -->
     <div class="flex justify-center mb-6">
-
       {user ? (
         <form method="POST" action="/api/favorites/add">
           <input type="hidden" name="game_slug" value={slug} />
-
           <button 
             class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg font-semibold shadow-lg"
             type="submit"
@@ -31,19 +29,13 @@ const user = Astro.locals.user;
           </button>
         </form>
       ) : (
-        <a 
-          href="/login" 
-          class="px-5 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg shadow text-white"
-        >
+        <a href="/login" class="px-5 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg shadow text-white">
           Inicia sesión para agregar a favoritos
         </a>
       )}
-
     </div>
 
-    <!-- IMAGEN PRINCIPAL + CLIP -->
     <div class="flex flex-col md:flex-row gap-6">
-      <!-- Imagen principal -->
       {data?.background_image && (
         <div class={data?.clip?.clip ? "w-full md:w-1/2" : "w-full"}>
           <img 
@@ -54,7 +46,6 @@ const user = Astro.locals.user;
         </div>
       )}
 
-      <!-- Clip de video -->
       {data?.clip?.clip ? (
         <div class="w-full md:w-1/2 rounded-xl overflow-hidden shadow-2xl">
           <video
@@ -70,17 +61,18 @@ const user = Astro.locals.user;
       )}
     </div>
 
-    <!-- DESCRIPCIÓN -->
     <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
       <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
       <p class="text-gray-300 leading-relaxed" set:html={data.description}></p>
     </section>
 
-    <!-- INFO GENERAL -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
         <h3 class="text-xl font-semibold mb-2">Metacritic</h3>
-        <p class={`text-3xl font-bold ${data?.metacritic >= 90 ? "text-green-400" : data?.metacritic >= 70 ? "text-yellow-400" : "text-red-400"}`}>
+        <p class={`text-3xl font-bold ${
+          data?.metacritic >= 90 ? "text-green-400" :
+          data?.metacritic >= 70 ? "text-yellow-400" : "text-red-400"
+        }`}>
           {data?.metacritic ?? "N/A"}
         </p>
       </div>
@@ -96,7 +88,6 @@ const user = Astro.locals.user;
       </div>
     </section>
 
-    <!-- PLATAFORMAS -->
     {data?.platforms && (
       <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
         <h3 class="text-2xl font-semibold mb-4">Plataformas</h3>
@@ -108,7 +99,6 @@ const user = Astro.locals.user;
       </section>
     )}
 
-    <!-- GÉNEROS -->
     {data?.genres && (
       <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
         <h3 class="text-2xl font-semibold mb-4">Géneros</h3>
@@ -120,7 +110,6 @@ const user = Astro.locals.user;
       </section>
     )}
 
-    <!-- TIENDAS -->
     {data?.stores && (
       <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
         <h3 class="text-2xl font-semibold mb-4">Tiendas</h3>
@@ -132,7 +121,6 @@ const user = Astro.locals.user;
       </section>
     )}
 
-    <!-- DESARROLLADORES Y PUBLISHERS -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {data?.developers && (
         <div class="bg-gray-900 p-6 rounded-xl shadow-lg">
@@ -142,6 +130,7 @@ const user = Astro.locals.user;
           </ul>
         </div>
       )}
+
       {data?.publishers && (
         <div class="bg-gray-900 p-6 rounded-xl shadow-lg">
           <h3 class="text-xl font-semibold mb-2">Publishers</h3>
@@ -152,7 +141,6 @@ const user = Astro.locals.user;
       )}
     </section>
 
-    <!-- SCREENSHOTS -->
     {data?.short_screenshots && (
       <section>
         <h3 class="text-2xl font-semibold mb-4">Screenshots</h3>
