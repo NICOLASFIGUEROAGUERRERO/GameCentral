@@ -5,9 +5,7 @@ import node from "@astrojs/node";
 
 export default defineConfig({
   output: "server",
-  adapter: node({
-    mode: "standalone"  // Railway usa Node, esto es lo correcto
-  }),
+  adapter: node({ mode: "standalone" }),
   vite: {
     plugins: [tailwindcss()],
   },
